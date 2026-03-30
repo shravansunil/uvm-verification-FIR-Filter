@@ -1,5 +1,4 @@
-with open("README.md", "w") as f:
-    f.write("""# UVM Verification Environment for Pipelined FIR Filter
+# UVM Verification Environment for Pipelined FIR Filter
 
 This repository contains a complete, industry-standard **Universal Verification Methodology (UVM)** testbench designed to verify a parameterized, pipelined Finite Impulse Response (FIR) filter.
 

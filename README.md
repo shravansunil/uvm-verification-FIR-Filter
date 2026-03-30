@@ -67,3 +67,6 @@ xelab --incr --debug typical --relax --mt 8 -L xil_defaultlib -L uvm -L unisims_
 
 # 2. Run Simulation specifying the UVM Test
 xsim tb_top_behav -testplusarg UVM_TESTNAME=fir_test -testplusarg UVM_VERBOSITY=UVM_LOW -runall
+
+# 3. Generate the coverage reports for the verification
+exec xcrg -dir ./uvm_verification.sim/sim_1/behav/xsim/ -report_dir ./cov_report

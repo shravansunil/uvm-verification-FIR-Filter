@@ -70,14 +70,69 @@ class fir_rand_seq extends uvm_sequence#(fir_seq_item);
     endfunction
     
     task body();
-        // Increased to 500 to ensure we hit all coverage bins
-        repeat(500) begin 
-            req = fir_seq_item::type_id::create("req");
-            start_item(req);
-            assert(req.randomize() with { valid_in dist {1 := 80, 0 := 20}; });
-            finish_item(req);
-        end
-    endtask
+    req = fir_seq_item::type_id::create("req");
+
+    //---------------------------------------
+    // 🔴 1. CONTROL COVERAGE (already added)
+    //---------------------------------------
+
+    // 1 → 0 → 1 (stall)
+    start_item(req);
+    assert(req.randomize() with { valid_in == 1; });
+    finish_item(req);
+
+    start_item(req);
+    assert(req.randomize() with { valid_in == 0; });
+    finish_item(req);
+
+    start_item(req);
+    assert(req.randomize() with { valid_in == 1; });
+    finish_item(req);
+
+    // 1,1,1,1 (burst)
+    repeat(4) begin
+        start_item(req);
+        assert(req.randomize() with { valid_in == 1; });
+        finish_item(req);
+    end
+
+
+    //---------------------------------------
+    // 🔴 2. DATA COVERAGE (ADD THIS PART)
+    //---------------------------------------
+
+    // max_pos → max_neg transition
+    start_item(req);
+    assert(req.randomize() with { data_in == 32767; valid_in == 1; });
+    finish_item(req);
+
+    start_item(req);
+    assert(req.randomize() with { data_in == -32768; valid_in == 1; });
+    finish_item(req);
+
+    // hit zero
+    start_item(req);
+    assert(req.randomize() with { data_in == 0; valid_in == 1; });
+    finish_item(req);
+
+    // hit small values
+    repeat(100) begin
+        start_item(req);
+        assert(req.randomize() with { data_in inside {[-100:100]}; valid_in == 1; });
+        finish_item(req);
+    end
+
+
+    //---------------------------------------
+    // 🔵 3. RANDOM TRAFFIC (unchanged)
+    //---------------------------------------
+
+    repeat(500) begin 
+        start_item(req);
+        assert(req.randomize() with { valid_in dist {1 := 80, 0 := 20}; });
+        finish_item(req);
+    end
+endtask
 endclass
 
 //---------------------------------------------------------
@@ -252,7 +307,7 @@ class fir_coverage extends uvm_subscriber#(fir_seq_item);
 
     covergroup cg_data_in;
         option.per_instance = 1;
-        cp_data: coverpoint req.data_in {
+        cp_data: coverpoint req.data_in iff (req.valid_in) {
             bins zero       = {0};
             bins max_pos    = {32767};
             bins max_neg    = {-32768};

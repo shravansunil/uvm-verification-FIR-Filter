@@ -73,7 +73,7 @@ class fir_rand_seq extends uvm_sequence#(fir_seq_item);
     req = fir_seq_item::type_id::create("req");
 
     //---------------------------------------
-    // 🔴 1. CONTROL COVERAGE (already added)
+    // 1. CONTROL COVERAGE 
     //---------------------------------------
 
     // 1 → 0 → 1 (stall)
@@ -98,7 +98,7 @@ class fir_rand_seq extends uvm_sequence#(fir_seq_item);
 
 
     //---------------------------------------
-    // 🔴 2. DATA COVERAGE (ADD THIS PART)
+    // 2. DATA COVERAGE 
     //---------------------------------------
 
     // max_pos → max_neg transition
@@ -124,7 +124,7 @@ class fir_rand_seq extends uvm_sequence#(fir_seq_item);
 
 
     //---------------------------------------
-    // 🔵 3. RANDOM TRAFFIC (unchanged)
+    // 3. RANDOM TRAFFIC 
     //---------------------------------------
 
     repeat(500) begin 
@@ -319,7 +319,7 @@ class fir_coverage extends uvm_subscriber#(fir_seq_item);
             bins stalled = {0};
         }
     
-        // 3. CROSS COVERAGE! 
+        // 3. CROSS COVERAGE
         // the bins of cp_data and cp_valid
         cross_data_valid: cross cp_data, cp_valid {
             // Example: We might not care if the data is max_pos exactly when stalled,
